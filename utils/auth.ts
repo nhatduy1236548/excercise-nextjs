@@ -1,4 +1,6 @@
 import { User } from "@/tyles/user.type"
+import { serialize } from "cookie"
+import { NextApiResponse } from 'next';
 
 export const LocalStorageEventTarget = new EventTarget()
 
@@ -25,9 +27,23 @@ export const getProfileFromLS = () => {
     if (typeof window !== 'undefined') {
         result = localStorage.getItem('profile');
     } 
-    return result ? JSON.parse(result):null;
+    return result ? result : null;
 }
 
-export const setProfileToLS = (profile: User) => {
-    localStorage.setItem('profile', JSON.stringify(profile));
+export const setProfileToLS = (profile: string) => {
+    localStorage.setItem('profile', profile);
 }
+
+export function setCookie(
+    res: NextApiResponse,
+    name: string,
+    value: string,
+    options: Record<string, any> = {}
+  ): void {
+    const cookie = serialize(name, value, options);
+    res.setHeader('Set-Cookie', cookie);
+  }
+
+  export function deleteCookie(res: NextApiResponse, name:string) {
+    setCookie(res, name, '', { maxAge: 0 });
+  }

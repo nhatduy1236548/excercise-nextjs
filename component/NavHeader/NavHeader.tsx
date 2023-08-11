@@ -4,7 +4,7 @@ import { useContext } from "react";
 
 export default function NavHeader() {
     const { isAuthenticated, profile } = useContext(AppContext)
-
+    
     return (
         <nav className='bg-blue-900 fixed top-0 w-full z-10 p-6 flex justify-between'>
             <div className='text-2xl font-semi text-primary'>
@@ -14,10 +14,10 @@ export default function NavHeader() {
                     {isAuthenticated && (
                         <div
                             className='ml-6 flex cursor-pointer items-center py-1 hover:text-white/70' >
-                            <div className='relative rounded-sm border border-gray-200 bg-white shadow-md'>
-                                Tài khoản của tôi
+                            <div className='relative rounded-sm border border-gray-200 bg-white shadow-md mr-5 p-2 hover:bg-blue-100 transition'>
+                                <span className='text-blue-600'>Tài khoản của tôi</span>
                             </div>
-                            <div>{profile?.email}</div>
+                            <div className='text-black'>{profile}</div>
                         </div>
                     )}
                     {!isAuthenticated && (

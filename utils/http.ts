@@ -1,13 +1,12 @@
 import config from "@/constants/config";
 import { clearLS, getAccessTokenFromLS, setAccessTokenToLS } from "./auth";
 import { URL_LOGIN, URL_REGISTER } from "@/api/auth.api";
-import axios, { AxiosError, AxiosInstance, HttpStatusCode } from "axios";
+import axios, { AxiosError, AxiosInstance, AxiosRequestHeaders, HttpStatusCode, InternalAxiosRequestConfig, RawAxiosRequestConfig } from "axios";
 import { toast } from "react-toastify";
-import { AuthResponse } from "@/tyles/auth.type";
 
 class Http {
     instance: AxiosInstance;
-    private accessToken: string;
+    public accessToken: string;
 
     constructor() {
         this.accessToken = getAccessTokenFromLS() as string;
@@ -15,43 +14,44 @@ class Http {
             baseURL: config.baseUrl,
             timeout: 10000,
             headers: {
-                'Content-Type': 'application/json',
-                'expire-access-token': 60 * 60 * 24,
-                'expire-refresh-token': 60 * 60 * 24 * 160
+                'Content-Type': 'application/json'
             }
         })
 
         this.instance.interceptors.request.use(
-            (config) => {
-                console.log('sending');
-                console.log(config.url);
-            if (this.accessToken && config.headers) {
-                config.headers.authorization = this.accessToken;
-                return config;
-            }
-            console.log('url: '+config.url);
-            console.log('đã gửi');
-            return config
-        },
+            (config: InternalAxiosRequestConfig) => {
+                console.log('request');
+                console.log('request: '+config.baseURL)
+                if (this.accessToken && config.headers) {
+                    config.headers.authorization = 'Bearer ' +this.accessToken;
+                    return config;
+                }
+                // Thêm phần kiểm tra nếu không có phương thức thì sử dụng GET
+                console.log(config.method)
+                if (!config.method) {
+                    config.method = 'get';
+                }
+                return config
+            },
             (error: AxiosError) => {
-                console.log('lỗi ở request');
+                console.log('error request: '+ error.config?.baseURL)
                 return Promise.reject(error);
             }
         )
 
         this.instance.interceptors.response.use(
             (response) => {
-                console.log('response: '+response);
+                console.log(response);
                 const {url} = response.config
-                if (url === URL_LOGIN || url === URL_REGISTER) {
-                    const data = response.data as AuthResponse ;
-                    this.accessToken = data.data.access_token;
+                if (url == URL_LOGIN || url == URL_REGISTER) {
+                    // const data = response.data as AuthResponse ;
+                    this.accessToken = response.data.accessToken;
                     setAccessTokenToLS(this.accessToken);
                 }
                 return response
             },
             (error: AxiosError) => {
-                console.log('lỗi ở response: '+error);
+                console.log('error response: '+error.config);
                 if (
                     ! [HttpStatusCode.UnprocessableEntity, HttpStatusCode.Unauthorized].includes(error.response?.status as number)
                 ) {

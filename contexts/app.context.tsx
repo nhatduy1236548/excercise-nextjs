@@ -5,8 +5,8 @@ import { createContext, useState } from "react";
 interface AppContextInterface {
     isAuthenticated: boolean
     setIsAuthenticated: React.Dispatch<React.SetStateAction<boolean>>
-    profile: User | null
-    setProfile: React.Dispatch<React.SetStateAction<User | null>>
+    profile: string | null
+    setProfile: React.Dispatch<React.SetStateAction<string | null>>
 }
 
 const initialAppContext: AppContextInterface = {
@@ -19,7 +19,7 @@ const initialAppContext: AppContextInterface = {
 export const AppContext = createContext<AppContextInterface>(initialAppContext);
 export const AppProvider = ({children}:{children: React.ReactNode}) => {
     const [isAuthenticated, setIsAuthenticated] = useState<boolean>(initialAppContext.isAuthenticated);
-    const [profile, setProfile] = useState<User | null>(initialAppContext.profile)
+    const [profile, setProfile] = useState<string | null>(initialAppContext.profile)
 
     return (
         <AppContext.Provider value={{ 

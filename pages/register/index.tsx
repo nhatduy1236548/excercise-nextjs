@@ -13,6 +13,7 @@ import Input from '@/component/Input'
 import Button from '@/component/Button/Button'
 import Head from 'next/head';
 import { useRouter } from 'next/router';
+import { AxiosResponse } from 'axios';
 
 type FormData = Pick<Schema, 'email' | 'password' | 'confirm_password'>
 const registerSchema = schema.pick(['email', 'password', 'confirm_password'])
@@ -36,9 +37,9 @@ export default function Register() {
   const onSubmit = handleSubmit((data) => {
     const body = omit(data, ['confirm_password'])
     registerAccountMutation.mutate(body, {
-      onSuccess: (data) => {
+      onSuccess: (data:AxiosResponse) => {
         setIsAuthenticated(true)
-        setProfile(data.data.data.user)
+        setProfile(data.data.user)
         router.push('/home')
       },
       onError: (error) => {
@@ -52,30 +53,22 @@ export default function Register() {
               })
             })
           }
-          // if (formError?.email) {
-          //   setError('email', {
-          //     message: formError.email,
-          //     type: 'Server'
-          //   })
-          // }
-          // if (formError?.password) {
-          //   setError('password', {
-          //     message: formError.password,
-          //     type: 'Server'
-          //   })
-          // }
         }
       }
     })
   })
 
+  const onGoogleSubmit = async() => {
+    window.location.assign('http://localhost:3009/google/register');
+  }
+
   return (
-    <div className='bg-orange'>
+    <>
       <Head>
         <title>Đăng ký </title>
         <meta name='description' content='Đăng ký tài khoản' />
       </Head>
-      <div className='container'>
+      <div className='container mt-3'>
         <div className='grid grid-cols-1 py-12 lg:grid-cols-5 lg:py-32 lg:pr-10'>
           <div className='lg:col-span-2 lg:col-start-4'>
             <form className='rounded bg-white p-10 shadow-sm' onSubmit={onSubmit} noValidate>
@@ -119,6 +112,19 @@ export default function Register() {
                   Đăng ký
                 </Button>
               </div>
+              <div className='mt-3'>
+              <Button
+                onClick={() => onGoogleSubmit()}
+                className='flex w-full items-center justify-center bg-blue-500 border py-4 px-6 text-sm uppercase text-white hover:bg-blue-600'
+              >
+                <div className="w-full flex justify-between relative mb-2">
+                  <div className="absolute inset-y-0 left-0 flex items-center justify-center w-12 h-12 bg-white rounded-l-md ">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg"  alt="Google" className='w-6 h-6' />
+                  </div>
+                  <p className="pl-14">Login with Google</p>
+                </div>
+              </Button>
+            </div>
               <div className='mt-8 flex items-center justify-center'>
                 <span className='text-gray-400'>Bạn đã có tài khoản?</span>
                 <Link className='ml-1 text-red-400' href='/login'>
@@ -129,6 +135,6 @@ export default function Register() {
           </div>
         </div>
       </div>
-    </div>
+    </>
   )
 }

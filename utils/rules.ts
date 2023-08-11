@@ -5,8 +5,6 @@ const handleConfirmPasswordYup = (refString: string) => {
     return yup
       .string()
       .required('Nhập lại password là bắt buộc')
-      .min(6, 'Độ dài từ 6 - 160 ký tự')
-      .max(160, 'Độ dài từ 6 - 160 ký tự')
       .oneOf([yup.ref(refString)], 'Nhập lại password không khớp')
   }
 

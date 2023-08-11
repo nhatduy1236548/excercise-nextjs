@@ -1,12 +1,13 @@
-import { ButtonHTMLAttributes } from 'react'
+import { ButtonHTMLAttributes, useEffect } from 'react'
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  isLoading?: boolean
+  isLoading?: boolean,
+  onClick?: () => void;
 }
 
 export default function Button(props: ButtonProps) {
   const { className, isLoading, disabled, children, ...rest } = props
-  const newClassName = disabled ? className + ' cursor-not-allowed' : className
+  const newClassName = disabled ? className + ' cursor-not-allowed' : className;
   return (
     <button className={newClassName} disabled={disabled} {...rest}>
       {isLoading && (
